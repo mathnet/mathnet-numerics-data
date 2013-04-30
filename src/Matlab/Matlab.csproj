@@ -43,6 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adler32.cs" />
+    <Compile Include="ArrayClass.cs" />
+    <Compile Include="ArrayFlags.cs" />
+    <Compile Include="DataType.cs" />
+    <Compile Include="MatlabFile.cs" />
+    <Compile Include="MatlabParser.cs" />
+    <Compile Include="MatlabReader.cs" />
+    <Compile Include="MatlabWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

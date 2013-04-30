@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel", "src\Excel\Excel.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matlab", "src\Matlab\Matlab.csproj", "{550FB330-C86F-4C9D-9B4C-6D830CEB7520}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6B0247F6-B332-41BC-B100-C0E5509EE612}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{550FB330-C86F-4C9D-9B4C-6D830CEB7520}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{550FB330-C86F-4C9D-9B4C-6D830CEB7520}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{550FB330-C86F-4C9D-9B4C-6D830CEB7520}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B0247F6-B332-41BC-B100-C0E5509EE612}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B0247F6-B332-41BC-B100-C0E5509EE612}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B0247F6-B332-41BC-B100-C0E5509EE612}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B0247F6-B332-41BC-B100-C0E5509EE612}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
