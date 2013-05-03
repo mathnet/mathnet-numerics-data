@@ -53,6 +53,8 @@
     <Compile Include="Matlab\MatlabReaderTests.cs" />
     <Compile Include="Matlab\MatlabWriterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Text\DelimitedReaderTests.cs" />
+    <Compile Include="Text\DelimitedWriterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\data\Matlab\A.mat">
@@ -98,7 +100,12 @@
       <Project>{550fb330-c86f-4c9d-9b4c-6d830ceb7520}</Project>
       <Name>Matlab</Name>
     </ProjectReference>
+    <ProjectReference Include="..\src\Text\Text.csproj">
+      <Project>{9d3a08e1-6b96-4552-a535-412e589b3264}</Project>
+      <Name>Text</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
