@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>MathNet.Numerics.Data.Excel</id>
+    <version>$version$</version>
+    <title>Math.NET Numerics - Excel Data I/O Extensions</title>
+    <authors>Marcus Cuda, Christoph Ruegg</authors>
+    <owners>Christoph Ruegg</owners>
+    <licenseUrl>http://mathnetnumerics.codeplex.com/license</licenseUrl>
+    <projectUrl>http://numerics.mathdotnet.com/</projectUrl>
+    <iconUrl>http://www.mathdotnet.com/images/MathNet128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Microsoft Excel Data Input/Output Extensions for Math.NET Numerics, the numerical foundation of the Math.NET project, aiming to provide methods and algorithms for numerical computations in science, engineering and every day use.</description>
+    <releaseNotes></releaseNotes>
+    <tags>math numeric data excel</tags>
+  </metadata>
+</package>
