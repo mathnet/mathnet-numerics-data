@@ -57,9 +57,9 @@ namespace MathNet.Numerics.Data.UnitTests.Text
                         {new Complex32(4.4f, 4.4f), new Complex32(5.5f, 5.5f), new Complex32(6.6f, 6.6f)},
                         {new Complex32(7.7f, 7.7f), new Complex32(8.8f, 8.8f), new Complex32(9.9f, 9.9f)}
                     });
-            var writer = new DelimitedWriter(',')
+            var writer = new DelimitedWriter(",")
                 {
-                    CultureInfo = CultureInfo.InvariantCulture
+                    FormatProvider = CultureInfo.InvariantCulture
                 };
             var stream = new MemoryStream();
             writer.WriteMatrix(matrix, stream);
@@ -85,9 +85,9 @@ namespace MathNet.Numerics.Data.UnitTests.Text
                         {new Complex(4.4, 4.4), new Complex(5.5, 5.5), new Complex(6.6, 6.6)},
                         {new Complex(7.7, 7.7), new Complex(8.8, 8.8), new Complex(9.9, 9.9)}
                     });
-            var writer = new DelimitedWriter(',')
+            var writer = new DelimitedWriter(",")
                 {
-                    CultureInfo = CultureInfo.InvariantCulture
+                    FormatProvider = CultureInfo.InvariantCulture
                 };
             var stream = new MemoryStream();
             writer.WriteMatrix(matrix, stream);
@@ -107,9 +107,9 @@ namespace MathNet.Numerics.Data.UnitTests.Text
         public void CanWriteCommaDelimitedData()
         {
             var matrix = DenseMatrix.OfArray(new[,] {{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}});
-            var writer = new DelimitedWriter(',')
+            var writer = new DelimitedWriter(",")
                 {
-                    CultureInfo = CultureInfo.InvariantCulture
+                    FormatProvider = CultureInfo.InvariantCulture
                 };
             var stream = new MemoryStream();
             writer.WriteMatrix(matrix, stream);
@@ -128,12 +128,10 @@ namespace MathNet.Numerics.Data.UnitTests.Text
         [Test]
         public void CanWriteCommaDelimitedFloatData()
         {
-            var matrix =
-                LinearAlgebra.Single.DenseMatrix.OfArray(new[,]
-                    {{1.1f, 2.2f, 3.3f}, {4.4f, 5.5f, 6.6f}, {7.7f, 8.8f, 9.9f}});
-            var writer = new DelimitedWriter(',')
+            var matrix = LinearAlgebra.Single.DenseMatrix.OfArray(new[,] {{1.1f, 2.2f, 3.3f}, {4.4f, 5.5f, 6.6f}, {7.7f, 8.8f, 9.9f}});
+            var writer = new DelimitedWriter(",")
                 {
-                    CultureInfo = CultureInfo.InvariantCulture
+                    FormatProvider = CultureInfo.InvariantCulture
                 };
             var stream = new MemoryStream();
             writer.WriteMatrix(matrix, stream);
@@ -154,9 +152,9 @@ namespace MathNet.Numerics.Data.UnitTests.Text
         {
             var matrix = DenseMatrix.OfArray(new[,] {{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}});
             var culture = new CultureInfo("tr-TR");
-            var writer = new DelimitedWriter('.')
+            var writer = new DelimitedWriter(".")
                 {
-                    CultureInfo = culture
+                    FormatProvider = culture
                 };
             var stream = new MemoryStream();
             writer.WriteMatrix(matrix, stream);
@@ -176,9 +174,9 @@ namespace MathNet.Numerics.Data.UnitTests.Text
         public void CanWriteSpaceDelimitedData()
         {
             var matrix = SparseMatrix.OfArray(new[,] {{1.1, 0, 0}, {0, 5.5, 0}, {0, 0, 9.9}});
-            var writer = new DelimitedWriter(' ')
+            var writer = new DelimitedWriter(" ")
                 {
-                    CultureInfo = CultureInfo.InvariantCulture
+                    FormatProvider = CultureInfo.InvariantCulture
                 };
             var stream = new MemoryStream();
             writer.WriteMatrix(matrix, stream);

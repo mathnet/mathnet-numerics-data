@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MatrixWriter.cs" />
     <Compile Include="DelimitedReader.cs" />
     <Compile Include="DelimitedWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
