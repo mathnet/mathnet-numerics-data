@@ -87,7 +87,7 @@ namespace MathNet.Numerics.Data.Text
         /// <summary>
         /// The regular expression to use.
         /// </summary>
-        private Regex _regex = new Regex(string.Format(Base, @"\s", RegexOptions.Compiled));
+        private Regex _regex = new Regex(string.Format(Base, @"\s"), RegexOptions.Compiled);
 
         /// <summary>
         /// Sets the Type for the Dense and Sparse matrices.
@@ -158,7 +158,7 @@ namespace MathNet.Numerics.Data.Text
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    _regex = new Regex(string.Format(Base, value, RegexOptions.Compiled));
+                    _regex = new Regex(string.Format(Base, value), RegexOptions.Compiled);
                 }
             }
         }
