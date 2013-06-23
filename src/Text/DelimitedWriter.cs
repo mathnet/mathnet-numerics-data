@@ -105,7 +105,7 @@ namespace MathNet.Numerics.Data.Text
         }
 
         /// <summary>
-        /// Writes the given <see cref="Matrix{DataType}"/> to the given <see cref="TextWriter"/>.
+        /// Writes the given <see cref="Matrix{TDataType}"/> to the given <see cref="TextWriter"/>.
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
         /// <param name="writer">The <see cref="TextWriter"/> to write the matrix to.</param>
@@ -121,7 +121,7 @@ namespace MathNet.Numerics.Data.Text
         /// Writes a matrix to the given TextWriter. Optionally accepts custom column headers, delimiter, number format and culture.
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
-        /// <param name="writer">The <see cref="TextWriter"/> to write the matrix to. Default ",".</param>
+        /// <param name="writer">The <see cref="TextWriter"/> to write the matrix to. Default: ",".</param>
         /// <param name="delimiter">Number delimiter to write between numbers of the same line.</param>
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
@@ -177,7 +177,7 @@ namespace MathNet.Numerics.Data.Text
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
         /// <param name="filePath">The path and name of the file to write the matrix to. If the file already exists, the file will be overwritten.</param>
-        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default ",".</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default: ",".</param>
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
         /// <param name="formatProvider">The culture to use. Default: null.</param>
@@ -197,7 +197,7 @@ namespace MathNet.Numerics.Data.Text
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
         /// <param name="stream">The <see cref="Stream"/> to write the matrix to.</param>
-        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default ",".</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default: ",".</param>
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
         /// <param name="formatProvider">The culture to use. Default: null.</param>

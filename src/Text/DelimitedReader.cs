@@ -29,14 +29,13 @@
 // </copyright>
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Generic;
 
 namespace MathNet.Numerics.Data.Text
@@ -45,145 +44,27 @@ namespace MathNet.Numerics.Data.Text
     /// Creates a <see cref="Matrix{T}"/> from a delimited text file. If the user does not
     /// specify a delimiter, then any whitespace is used.
     /// </summary>
-    /// <typeparam name="TDataType">The data type of the Matrix. It can be either: double, float, Complex, or Complex32.</typeparam>
-    public class DelimitedReader<TDataType>
-        where TDataType : struct, IEquatable<TDataType>, IFormattable
+    public class DelimitedReader
     {
-        // ReSharper disable StaticFieldInGenericType
         /// <summary>
         /// The base regular expression.
         /// </summary>
-        private const string Base = "\\([^\\)]*\\)|'[^']*'|\"[^\"]*\"|[^{0}]*";
+        private const string RegexTemplate = "\\([^\\)]*\\)|'[^']*'|\"[^\"]*\"|[^{0}]*";
 
         /// <summary>
-        /// The Type of of TDataType.
+        /// Cached compiled regular expressions for various delimiters, as needed.
         /// </summary>
-        private static readonly Type DataType = typeof (TDataType);
-
-        /// <summary>
-        /// Constructor to create dense matrices.
-        /// </summary>
-        private static readonly ConstructorInfo DenseConstructor;
-
-        /// <summary>
-        /// Constructor to create sparse matrices.
-        /// </summary>
-        private static readonly ConstructorInfo SparseConstructor;
-
-        // ReSharper restore StaticFieldInGenericType
-
-        /// <summary>
-        /// Constructor to create matrix instance.
-        /// </summary>
-        private ConstructorInfo _constructor = DenseConstructor;
-
-        /// <summary>
-        /// The <see cref="CultureInfo"/> to use.
-        /// </summary>
-        private CultureInfo _cultureInfo = CultureInfo.CurrentCulture;
-
-        /// <summary>
-        /// A function that converts a string into the given data type.
-        /// </summary>
-        /// <returns>The converted number.</returns>
-        private Func<string, object> _parseFunction;
-
-        /// <summary>
-        /// The regular expression to use.
-        /// </summary>
-        private Regex _regex = new Regex(string.Format(Base, @"\s"), RegexOptions.Compiled);
-
-        /// <summary>
-        /// Sets the Type for the Dense and Sparse matrices.
-        /// </summary>
-        static DelimitedReader()
-        {
-            if (DataType == typeof (double))
-            {
-                DenseConstructor = typeof (DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                SparseConstructor = typeof (SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-            }
-            else if (DataType == typeof (float))
-            {
-                DenseConstructor =
-                    typeof (LinearAlgebra.Single.DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                SparseConstructor =
-                    typeof (LinearAlgebra.Single.SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-            }
-            else if (DataType == typeof (Complex))
-            {
-                DenseConstructor =
-                    typeof (LinearAlgebra.Complex.DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                SparseConstructor =
-                    typeof (LinearAlgebra.Complex.SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-            }
-            else if (DataType == typeof (Complex32))
-            {
-                DenseConstructor =
-                    typeof (LinearAlgebra.Complex32.DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                SparseConstructor =
-                    typeof (LinearAlgebra.Complex32.SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DelimitedReader{TDataType}"/> class using
-        /// any whitespace as the delimiter and generating dense matrices.
-        /// </summary>
-        public DelimitedReader()
-        {
-            SetParser();
-        }
-
-        /// <summary>
-        /// Whether to create sparse matrices or not. Defaults to false.
-        /// </summary>
-        public bool Sparse
-        {
-            set
-            {
-                if (value)
-                {
-                    _constructor = SparseConstructor;
-                }
-            }
-        }
+        static readonly ConcurrentDictionary<string, Regex> RegexCache = new ConcurrentDictionary<string, Regex>();
 
         /// <summary>
         /// The delimiter to use for parsing. Defaults to any whitespace.
         /// </summary>
-        public string Delmiter
-        {
-            set
-            {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    _regex = new Regex(string.Format(Base, value), RegexOptions.Compiled);
-                }
-            }
-        }
+        public string Delimiter { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="CultureInfo"/> to use when parsing the numbers.
+        /// Whether to create sparse matrices or not. Defaults to false.
         /// </summary>
-        /// <value>The culture info.</value>
-        /// <remarks>Defaults to <c>CultureInfo.CurrentCulture</c>.</remarks>
-        public CultureInfo CultureInfo
-        {
-            get { return _cultureInfo; }
-
-            set
-            {
-                if (value != null)
-                {
-                    _cultureInfo = value;
-                }
-            }
-        }
+        public bool Sparse { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the files has a header row.
@@ -195,31 +76,23 @@ namespace MathNet.Numerics.Data.Text
         public bool HasHeaderRow { get; set; }
 
         /// <summary>
-        /// Sets the parse function for the given TDataType.
-        /// Note: This cannot be made static because of _cultureInfo.
+        /// Gets or sets the <see cref="FormatProvider"/> to use when parsing the numbers.
         /// </summary>
-        private void SetParser()
+        /// <value>The culture info.</value>
+        /// <remarks>Defaults to <c>CultureInfo.CurrentCulture</c>.</remarks>
+        public IFormatProvider FormatProvider { get; set; }
+
+        /// <summary>
+        /// Performs the actual reading.
+        /// </summary>
+        /// <param name="filePath">The path and name of the file to read the matrix from.</param>
+        /// <returns>
+        /// A matrix containing the data from the <see cref="Stream"/>.
+        /// </returns>
+        public Matrix<TDataType> ReadMatrix<TDataType>(string filePath)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
-            if (DataType == typeof (double))
-            {
-                _parseFunction = number => double.Parse(number, NumberStyles.Any, _cultureInfo);
-            }
-            else if (DataType == typeof (float))
-            {
-                _parseFunction = number => float.Parse(number, NumberStyles.Any, _cultureInfo);
-            }
-            else if (DataType == typeof (Complex))
-            {
-                _parseFunction = number => number.ToComplex(_cultureInfo);
-            }
-            else if (DataType == typeof (Complex32))
-            {
-                _parseFunction = number => number.ToComplex32(_cultureInfo);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            return ReadFile<TDataType>(filePath, Sparse, Delimiter, HasHeaderRow, FormatProvider);
         }
 
         /// <summary>
@@ -227,10 +100,46 @@ namespace MathNet.Numerics.Data.Text
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> to read the matrix from.</param>
         /// <returns>
-        /// A matrix containing the data from the <see cref="Stream"/>. <see langword="null"/> is returned if the <see cref="Stream"/> is empty.
+        /// A matrix containing the data from the <see cref="Stream"/>.
         /// </returns>
-        public Matrix<TDataType> ReadMatrix(Stream stream)
+        public Matrix<TDataType> ReadMatrix<TDataType>(Stream stream)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
+            return ReadStream<TDataType>(stream, Sparse, Delimiter, HasHeaderRow, FormatProvider);
+        }
+
+        /// <summary>
+        /// Performs the actual reading.
+        /// </summary>
+        /// <param name="reader">The <see cref="TextReader"/> to read the matrix from.</param>
+        /// <returns>
+        /// A matrix containing the data from the <see cref="Stream"/>.
+        /// </returns>
+        public Matrix<TDataType> ReadMatrix<TDataType>(TextReader reader)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
+        {
+            return Read<TDataType>(reader, Sparse, Delimiter, HasHeaderRow, FormatProvider);
+        }
+
+        /// <summary>
+        /// Reads a <see cref="Matrix{TDataType}"/> from the given <see cref="TextReader"/>.
+        /// </summary>
+        /// <param name="reader">The <see cref="TextReader"/> to read the matrix from.</param>
+        /// <param name="sparse">Whether the the returned matrix should be constructed as sparse (true) or dense (false). Default: false.</param>
+        /// <param name="delimiter">Number delimiter between numbers of the same line. Supports Regex groups. Default: "\s" (white space).</param>
+        /// <param name="hasHeaders">Whether the first row contains column headers or not. Default: false.</param>
+        /// <param name="formatProvider">The culture to use. Default: null.</param>
+        /// <returns>A matrix containing the data from the <see cref="TextReader"/>.</returns>
+        /// <typeparam name="TDataType">The data type of the Matrix. It can be either: double, float, Complex, or Complex32.</typeparam>
+        public static Matrix<TDataType> Read<TDataType>(TextReader reader, bool sparse = false, string delimiter = @"\s", bool hasHeaders = false, IFormatProvider formatProvider = null)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
+        {
+            if (String.IsNullOrEmpty(delimiter))
+            {
+                delimiter = @"\s";
+            }
+            var regex = RegexCache.GetOrAdd(delimiter, d => new Regex(string.Format(RegexTemplate, d), RegexOptions.Compiled));
+
             var data = new List<string[]>();
 
             // max is used to supports files like:
@@ -243,9 +152,8 @@ namespace MathNet.Numerics.Data.Text
             // 7, 0, 0, 0
             var max = -1;
 
-            var reader = new StreamReader(stream);
             var line = reader.ReadLine();
-            if (HasHeaderRow)
+            if (hasHeaders)
             {
                 line = reader.ReadLine();
             }
@@ -255,7 +163,7 @@ namespace MathNet.Numerics.Data.Text
                 line = line.Trim();
                 if (line.Length > 0)
                 {
-                    var matches = _regex.Matches(line);
+                    var matches = regex.Matches(line);
                     var row = (from Match match in matches where match.Length > 0 select match.Value).ToArray();
                     max = Math.Max(max, row.Length);
                     data.Add(row);
@@ -264,7 +172,8 @@ namespace MathNet.Numerics.Data.Text
                 line = reader.ReadLine();
             }
 
-            var ret = (Matrix<TDataType>) _constructor.Invoke(new object[] {data.Count, max});
+            var parse = CreateParser<TDataType>(formatProvider);
+            var matrix = sparse ? CreateSparse<TDataType>(data.Count, max) : CreateDense<TDataType>(data.Count, max);
 
             if (data.Count != 0)
             {
@@ -275,28 +184,118 @@ namespace MathNet.Numerics.Data.Text
                     {
                         // strip off quotes
                         var value = row[j].Replace("'", string.Empty).Replace("\"", string.Empty);
-                        ret[i, j] = (TDataType) _parseFunction(value);
+                        matrix[i, j] = parse(value);
                     }
                 }
             }
 
             reader.Close();
             reader.Dispose();
-            return ret;
+
+            return matrix;
         }
 
         /// <summary>
-        /// Creates a DelimtedReader that returns matrices of type TMatrixTye.
+        /// Reads a <see cref="Matrix{TDataType}"/> from the given file.
         /// </summary>
-        /// <typeparam name="TMatrixType">The type of matrix to return.</typeparam>
-        /// <returns>A delimited reader</returns>
-        public static DelimitedReader<TDataType> OfMatrixType<TMatrixType>() where TMatrixType : Matrix<TDataType>
+        /// <param name="filePath">The path and name of the file to read the matrix from.</param>
+        /// <param name="sparse">Whether the the returned matrix should be constructed as sparse (true) or dense (false). Default: false.</param>
+        /// <param name="delimiter">Number delimiter between numbers of the same line. Supports Regex groups. Default: "\s" (white space).</param>
+        /// <param name="hasHeaders">Whether the first row contains column headers or not. Default: false.</param>
+        /// <param name="formatProvider">The culture to use. Default: null.</param>
+        /// <returns>A matrix containing the data from the <see cref="TextReader"/>.</returns>
+        /// <typeparam name="TDataType">The data type of the Matrix. It can be either: double, float, Complex, or Complex32.</typeparam>
+        public static Matrix<TDataType> ReadFile<TDataType>(string filePath, bool sparse = false, string delimiter = @"\s", bool hasHeaders = false, IFormatProvider formatProvider = null)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
-            var reader = new DelimitedReader<TDataType>
-                {
-                    _constructor = typeof (TMatrixType).GetConstructor(new[] {typeof (int), typeof (int)})
-                };
-            return reader;
+            using (var reader = new StreamReader(filePath))
+            {
+                return Read<TDataType>(reader, sparse, delimiter, hasHeaders, formatProvider);
+            }
+        }
+
+        /// <summary>
+        /// Reads a <see cref="Matrix{TDataType}"/> from the given <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream"/> to read the matrix from.</param>
+        /// <param name="sparse">Whether the the returned matrix should be constructed as sparse (true) or dense (false). Default: false.</param>
+        /// <param name="delimiter">Number delimiter between numbers of the same line. Supports Regex groups. Default: "\s" (white space).</param>
+        /// <param name="hasHeaders">Whether the first row contains column headers or not. Default: false.</param>
+        /// <param name="formatProvider">The culture to use. Default: null.</param>
+        /// <returns>A matrix containing the data from the <see cref="TextReader"/>.</returns>
+        /// <typeparam name="TDataType">The data type of the Matrix. It can be either: double, float, Complex, or Complex32.</typeparam>
+        public static Matrix<TDataType> ReadStream<TDataType>(Stream stream, bool sparse = false, string delimiter = @"\s", bool hasHeaders = false, IFormatProvider formatProvider = null)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
+        {
+            using (var reader = new StreamReader(stream))
+            {
+                return Read<TDataType>(reader, sparse, delimiter, hasHeaders, formatProvider);
+            }
+        }
+
+        static Matrix<T> CreateDense<T>(int rows, int cols)
+            where T : struct, IEquatable<T>, IFormattable
+        {
+            if (typeof(T) == typeof(double))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Double.DenseMatrix(rows, cols);
+            }
+            if (typeof(T) == typeof(float))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Single.DenseMatrix(rows, cols);
+            }
+            if (typeof(T) == typeof(Complex))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Complex.DenseMatrix(rows, cols);
+            }
+            if (typeof(T) == typeof(Complex32))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Complex32.DenseMatrix(rows, cols);
+            }
+            throw new NotSupportedException();
+        }
+
+        static Matrix<T> CreateSparse<T>(int rows, int cols)
+            where T : struct, IEquatable<T>, IFormattable
+        {
+            if (typeof(T) == typeof(double))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Double.SparseMatrix(rows, cols);
+            }
+            if (typeof(T) == typeof(float))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Single.SparseMatrix(rows, cols);
+            }
+            if (typeof(T) == typeof(Complex))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Complex.SparseMatrix(rows, cols);
+            }
+            if (typeof(T) == typeof(Complex32))
+            {
+                return (Matrix<T>)(object)new LinearAlgebra.Complex32.SparseMatrix(rows, cols);
+            }
+            throw new NotSupportedException();
+        }
+
+        static Func<string, T> CreateParser<T>(IFormatProvider formatProvider)
+        {
+            if (typeof(T) == typeof(double))
+            {
+                return number => (T)(object)double.Parse(number, NumberStyles.Any, formatProvider);
+            }
+            if (typeof(T) == typeof(float))
+            {
+                return number => (T)(object)float.Parse(number, NumberStyles.Any, formatProvider);
+            }
+            if (typeof(T) == typeof(Complex))
+            {
+                return number => (T)(object)number.ToComplex(formatProvider);
+            }
+            if (typeof(T) == typeof(Complex32))
+            {
+                return number => (T)(object)number.ToComplex32(formatProvider);
+            }
+            throw new NotSupportedException();
         }
     }
 }
