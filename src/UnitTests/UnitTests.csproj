@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics">
-      <HintPath>..\packages\MathNet.Numerics.2.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <HintPath>..\..\packages\MathNet.Numerics.2.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,50 +54,50 @@
     <Compile Include="Text\DelimitedWriterTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\data\Matlab\A.mat">
+    <None Include="..\..\data\Matlab\A.mat">
       <Link>data\matlab\A.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\data\Matlab\collection-nocompress.mat">
+    <None Include="..\..\data\Matlab\collection-nocompress.mat">
       <Link>data\matlab\collection-nocompress.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\data\Matlab\collection.mat">
+    <None Include="..\..\data\Matlab\collection.mat">
       <Link>data\matlab\collection.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\data\Matlab\complex.mat">
+    <None Include="..\..\data\Matlab\complex.mat">
       <Link>data\matlab\complex.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\data\Matlab\sparse-large.mat">
+    <None Include="..\..\data\Matlab\sparse-large.mat">
       <Link>data\matlab\sparse-large.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\data\Matlab\sparse-small.mat">
+    <None Include="..\..\data\Matlab\sparse-small.mat">
       <Link>data\matlab\sparse-small.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\data\Matlab\sparse_complex.mat">
+    <None Include="..\..\data\Matlab\sparse_complex.mat">
       <Link>data\matlab\sparse_complex.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\data\Matlab\v.mat">
+    <None Include="..\..\data\Matlab\v.mat">
       <Link>data\matlab\v.mat</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Excel\Excel.csproj">
+    <ProjectReference Include="..\Excel\Excel.csproj">
       <Project>{82db5072-dc3a-459d-bef2-70f6d06cffcd}</Project>
       <Name>Excel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\Matlab\Matlab.csproj">
+    <ProjectReference Include="..\Matlab\Matlab.csproj">
       <Project>{550fb330-c86f-4c9d-9b4c-6d830ceb7520}</Project>
       <Name>Matlab</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\Text\Text.csproj">
+    <ProjectReference Include="..\Text\Text.csproj">
       <Project>{9d3a08e1-6b96-4552-a535-412e589b3264}</Project>
       <Name>Text</Name>
     </ProjectReference>

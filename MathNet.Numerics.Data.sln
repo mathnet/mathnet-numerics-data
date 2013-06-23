@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel", "src\Excel\Excel.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matlab", "src\Matlab\Matlab.csproj", "{550FB330-C86F-4C9D-9B4C-6D830CEB7520}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6B0247F6-B332-41BC-B100-C0E5509EE612}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "src\UnitTests\UnitTests.csproj", "{6B0247F6-B332-41BC-B100-C0E5509EE612}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text", "src\Text\Text.csproj", "{9D3A08E1-6B96-4552-A535-412E589B3264}"
 EndProject
