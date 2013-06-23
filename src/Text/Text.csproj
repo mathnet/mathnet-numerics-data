@@ -33,9 +33,6 @@
     <Reference Include="MathNet.Numerics">
       <HintPath>..\..\packages\MathNet.Numerics.2.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics.IO">
-      <HintPath>..\..\packages\MathNet.Numerics.2.5.0\lib\net40\MathNet.Numerics.IO.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -46,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MatrixWriter.cs" />
     <Compile Include="DelimitedReader.cs" />
     <Compile Include="DelimitedWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

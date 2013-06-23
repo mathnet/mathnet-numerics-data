@@ -32,8 +32,8 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
+using MathNet.Numerics.Data.Text;
 using MathNet.Numerics.LinearAlgebra.Double;
-using MathNet.Numerics.LinearAlgebra.IO;
 using NUnit.Framework;
 
 namespace MathNet.Numerics.Data.UnitTests.Text
