@@ -173,19 +173,17 @@ namespace MathNet.Numerics.Data.Text
             }
 
             var parse = CreateParser<TDataType>(formatProvider);
-            var matrix = sparse ? CreateSparse<TDataType>(data.Count, max) : CreateDense<TDataType>(data.Count, max);
+            var matrix = CreateMatrix<TDataType>(data.Count, max, sparse);
+            var storage = matrix.Storage;
 
-            if (data.Count != 0)
+            for (var i = 0; i < data.Count; i++)
             {
-                for (var i = 0; i < data.Count; i++)
+                var row = data[i];
+                for (var j = 0; j < row.Length; j++)
                 {
-                    var row = data[i];
-                    for (var j = 0; j < row.Length; j++)
-                    {
-                        // strip off quotes
-                        var value = row[j].Replace("'", string.Empty).Replace("\"", string.Empty);
-                        matrix[i, j] = parse(value);
-                    }
+                    // strip off quotes (TODO: can we replace this with trimming?)
+                    var value = row[j].Replace("'", string.Empty).Replace("\"", string.Empty);
+                    storage.At(i, j, parse(value));
                 }
             }
 
@@ -233,67 +231,53 @@ namespace MathNet.Numerics.Data.Text
             }
         }
 
-        static Matrix<T> CreateDense<T>(int rows, int cols)
+        static Matrix<T> CreateMatrix<T>(int rows, int cols, bool sparse)
             where T : struct, IEquatable<T>, IFormattable
         {
-            if (typeof(T) == typeof(double))
+            if (typeof (T) == typeof (double))
             {
-                return (Matrix<T>)(object)new LinearAlgebra.Double.DenseMatrix(rows, cols);
+                return sparse
+                    ? (Matrix<T>) (object) new LinearAlgebra.Double.SparseMatrix(rows, cols)
+                    : (Matrix<T>) (object) new LinearAlgebra.Double.DenseMatrix(rows, cols);
             }
-            if (typeof(T) == typeof(float))
+            if (typeof (T) == typeof (float))
             {
-                return (Matrix<T>)(object)new LinearAlgebra.Single.DenseMatrix(rows, cols);
+                return sparse
+                    ? (Matrix<T>) (object) new LinearAlgebra.Single.SparseMatrix(rows, cols)
+                    : (Matrix<T>) (object) new LinearAlgebra.Single.DenseMatrix(rows, cols);
             }
-            if (typeof(T) == typeof(Complex))
+            if (typeof (T) == typeof (Complex))
             {
-                return (Matrix<T>)(object)new LinearAlgebra.Complex.DenseMatrix(rows, cols);
+                return sparse
+                    ? (Matrix<T>) (object) new LinearAlgebra.Complex.SparseMatrix(rows, cols)
+                    : (Matrix<T>) (object) new LinearAlgebra.Complex.DenseMatrix(rows, cols);
             }
-            if (typeof(T) == typeof(Complex32))
+            if (typeof (T) == typeof (Complex32))
             {
-                return (Matrix<T>)(object)new LinearAlgebra.Complex32.DenseMatrix(rows, cols);
-            }
-            throw new NotSupportedException();
-        }
-
-        static Matrix<T> CreateSparse<T>(int rows, int cols)
-            where T : struct, IEquatable<T>, IFormattable
-        {
-            if (typeof(T) == typeof(double))
-            {
-                return (Matrix<T>)(object)new LinearAlgebra.Double.SparseMatrix(rows, cols);
-            }
-            if (typeof(T) == typeof(float))
-            {
-                return (Matrix<T>)(object)new LinearAlgebra.Single.SparseMatrix(rows, cols);
-            }
-            if (typeof(T) == typeof(Complex))
-            {
-                return (Matrix<T>)(object)new LinearAlgebra.Complex.SparseMatrix(rows, cols);
-            }
-            if (typeof(T) == typeof(Complex32))
-            {
-                return (Matrix<T>)(object)new LinearAlgebra.Complex32.SparseMatrix(rows, cols);
+                return sparse
+                    ? (Matrix<T>) (object) new LinearAlgebra.Complex32.SparseMatrix(rows, cols)
+                    : (Matrix<T>) (object) new LinearAlgebra.Complex32.DenseMatrix(rows, cols);
             }
             throw new NotSupportedException();
         }
 
         static Func<string, T> CreateParser<T>(IFormatProvider formatProvider)
         {
-            if (typeof(T) == typeof(double))
+            if (typeof (T) == typeof (double))
             {
-                return number => (T)(object)double.Parse(number, NumberStyles.Any, formatProvider);
+                return number => (T) (object) double.Parse(number, NumberStyles.Any, formatProvider);
             }
-            if (typeof(T) == typeof(float))
+            if (typeof (T) == typeof (float))
             {
-                return number => (T)(object)float.Parse(number, NumberStyles.Any, formatProvider);
+                return number => (T) (object) float.Parse(number, NumberStyles.Any, formatProvider);
             }
-            if (typeof(T) == typeof(Complex))
+            if (typeof (T) == typeof (Complex))
             {
-                return number => (T)(object)number.ToComplex(formatProvider);
+                return number => (T) (object) number.ToComplex(formatProvider);
             }
-            if (typeof(T) == typeof(Complex32))
+            if (typeof (T) == typeof (Complex32))
             {
-                return number => (T)(object)number.ToComplex32(formatProvider);
+                return number => (T) (object) number.ToComplex32(formatProvider);
             }
             throw new NotSupportedException();
         }
