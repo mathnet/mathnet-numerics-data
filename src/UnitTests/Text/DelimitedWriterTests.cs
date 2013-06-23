@@ -44,9 +44,6 @@ namespace MathNet.Numerics.Data.UnitTests.Text
     [TestFixture]
     public class DelimitedWriterTests
     {
-        /// <summary>
-        /// Can write comma delimited data.
-        /// </summary>
         [Test]
         public void CanWriteCommaDelimitedComplex32Data()
         {
@@ -72,9 +69,6 @@ namespace MathNet.Numerics.Data.UnitTests.Text
             Assert.AreEqual(expected, text);
         }
 
-        /// <summary>
-        /// Can write comma delimited data.
-        /// </summary>
         [Test]
         public void CanWriteCommaDelimitedComplexData()
         {
@@ -100,11 +94,8 @@ namespace MathNet.Numerics.Data.UnitTests.Text
             Assert.AreEqual(expected, text);
         }
 
-        /// <summary>
-        /// Can write comma delimited data.
-        /// </summary>
         [Test]
-        public void CanWriteCommaDelimitedData()
+        public void CanWriteCommaDelimitedDoubleData()
         {
             var matrix = DenseMatrix.OfArray(new[,] {{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}});
             var writer = new DelimitedWriter(",")
@@ -122,11 +113,8 @@ namespace MathNet.Numerics.Data.UnitTests.Text
             Assert.AreEqual(expected, text);
         }
 
-        /// <summary>
-        /// Can write comma delimited data.
-        /// </summary>
         [Test]
-        public void CanWriteCommaDelimitedFloatData()
+        public void CanWriteCommaDelimitedSingleData()
         {
             var matrix = LinearAlgebra.Single.DenseMatrix.OfArray(new[,] {{1.1f, 2.2f, 3.3f}, {4.4f, 5.5f, 6.6f}, {7.7f, 8.8f, 9.9f}});
             var writer = new DelimitedWriter(",")
@@ -151,13 +139,8 @@ namespace MathNet.Numerics.Data.UnitTests.Text
         public void CanWritePeriodDelimitedData()
         {
             var matrix = DenseMatrix.OfArray(new[,] {{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}});
-            var culture = new CultureInfo("tr-TR");
-            var writer = new DelimitedWriter(".")
-                {
-                    FormatProvider = culture
-                };
             var stream = new MemoryStream();
-            writer.WriteMatrix(matrix, stream);
+            DelimitedWriter.WriteStream(matrix, stream, ".", formatProvider: new CultureInfo("tr-TR"));
             var data = stream.ToArray();
             var reader = new StreamReader(new MemoryStream(data));
             var text = reader.ReadToEnd();
@@ -174,12 +157,8 @@ namespace MathNet.Numerics.Data.UnitTests.Text
         public void CanWriteSpaceDelimitedData()
         {
             var matrix = SparseMatrix.OfArray(new[,] {{1.1, 0, 0}, {0, 5.5, 0}, {0, 0, 9.9}});
-            var writer = new DelimitedWriter(" ")
-                {
-                    FormatProvider = CultureInfo.InvariantCulture
-                };
             var stream = new MemoryStream();
-            writer.WriteMatrix(matrix, stream);
+            DelimitedWriter.WriteStream(matrix, stream, " ");
             var data = stream.ToArray();
             var reader = new StreamReader(new MemoryStream(data));
             var text = reader.ReadToEnd();

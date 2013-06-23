@@ -30,7 +30,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using MathNet.Numerics.LinearAlgebra.Generic;
 
@@ -43,148 +42,53 @@ namespace MathNet.Numerics.Data.Text
     public class DelimitedWriter
     {
         /// <summary>
-        /// The delimiter to use.
-        /// </summary>
-        private readonly string _delimiter;
-
-        /// <summary>
-        /// The <see cref="FormatProvider"/> to use.
-        /// </summary>
-        private IFormatProvider _formatProvider = CultureInfo.CurrentCulture;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DelimitedWriter"/> class. 
-        /// a comma as the delimiter.
+        /// Initializes a new instance of the <see cref="DelimitedWriter"/> class, using a comma as the delimiter.
         /// </summary>
         public DelimitedWriter()
         {
-            _delimiter = ",";
+            Delimiter = ",";
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelimitedWriter"/> class. 
-        /// using the given delimiter.
+        /// Initializes a new instance of the <see cref="DelimitedWriter"/> class, using the given delimiter.
         /// </summary>
-        /// <param name="delimiter">
-        /// the delimiter to use.
-        /// </param>
         public DelimitedWriter(string delimiter)
         {
-            _delimiter = delimiter;
+            Delimiter = delimiter;
         }
 
         /// <summary>
-        /// Gets or sets the column header values.
+        /// The delimiter to use.
         /// </summary>
-        /// <value>The column header values.</value>
-        /// <remarks>Will write the column headers if the list is not empty or <c>null</c>.</remarks>
+        public string Delimiter { get; private set; }
+
+        /// <summary>
+        /// Gets or sets column headers. Headers are only written if the header list is neither <c>null</c> nor empty.
+        /// </summary>
         public IList<string> ColumnHeaders { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="FormatProvider"/> to use when parsing the numbers.
+        /// Gets or sets the number format to use when writing numbers.
         /// </summary>
-        /// <value>The culture info.</value>
-        /// <remarks>Defaults to <c>CultureInfo.CurrentCulture</c>.</remarks>
-        public IFormatProvider FormatProvider
-        {
-            get
-            {
-                return _formatProvider;
-            }
-
-            set
-            {
-                if (value != null)
-                {
-                    _formatProvider = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the number format to use.
-        /// </summary>
-        /// <value>The number format to use when writing out each element.</value>
         public string Format { get; set; }
 
         /// <summary>
-        /// Writes the given <see cref="Matrix{TDataType}"/> to the given <see cref="TextWriter"/>.
+        /// Gets or sets the number format culture provider to use when writing numbers.
         /// </summary>
-        /// <typeparam name="TDataType">The data type of the Matrix. It can be either: double, float, Complex, or Complex32.</typeparam>
-        /// <param name="matrix">The matrix to write.</param>
-        /// <param name="writer">The <see cref="TextWriter"/> to write the matrix to.</param>
-        /// <param name="format">The number format to use on each element.</param>
-        /// <param name="formatProvider">The culture to use.</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="writer"/> is <c>null</c>.</exception>
-        void DoWriteMatrix<TDataType>(Matrix<TDataType> matrix, TextWriter writer, string format, IFormatProvider formatProvider)
-            where TDataType : struct, IEquatable<TDataType>, IFormattable
-        {
-            if (matrix == null)
-            {
-                throw new ArgumentNullException("matrix");
-            }
-
-            if (writer == null)
-            {
-                throw new ArgumentNullException("writer");
-            }
-
-            if (ColumnHeaders != null && ColumnHeaders.Count > 0)
-            {
-                for (var i = 0; i < ColumnHeaders.Count - 1; i++)
-                {
-                    writer.Write(ColumnHeaders[i]);
-                    writer.Write(_delimiter);
-                }
-
-                writer.WriteLine(ColumnHeaders[ColumnHeaders.Count - 1]);
-            }
-
-            var cols = matrix.ColumnCount - 1;
-            var rows = matrix.RowCount - 1;
-            for (var i = 0; i < matrix.RowCount; i++)
-            {
-                for (var j = 0; j < matrix.ColumnCount; j++)
-                {
-                    writer.Write(matrix[i, j].ToString(format, formatProvider));
-                    if (j != cols)
-                    {
-                        writer.Write(_delimiter);
-                    }
-                }
-
-                if (i != rows)
-                {
-                    writer.Write(Environment.NewLine);
-                }
-            }
-        }
+        public IFormatProvider FormatProvider { get; set; }
 
         /// <summary>
         /// Writes the given <see cref="Matrix{DataType}"/> to the given file. If the file already exists, 
         /// the file will be overwritten.
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
-        /// <param name="file">The file to write the matrix to.</param>
+        /// <param name="filePath">The file to write the matrix to.</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="file"/> is <c>null</c>.</exception>
         /// <typeparam name="TDataType">The data type of the Matrix. It can be either: double, float, Complex, or Complex32.</typeparam>
-        public void WriteMatrix<TDataType>(Matrix<TDataType> matrix, string file)
+        public void WriteMatrix<TDataType>(Matrix<TDataType> matrix, string filePath)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
-            if (matrix == null)
-            {
-                throw new ArgumentNullException("matrix");
-            }
-
-            if (file == null)
-            {
-                throw new ArgumentNullException("file");
-            }
-
-            using (var writer = new StreamWriter(file))
-            {
-                DoWriteMatrix(matrix, writer, Format, _formatProvider);
-            }
+            WriteFile(matrix, filePath, Delimiter, ColumnHeaders, Format, FormatProvider);
         }
 
         /// <summary>
@@ -197,20 +101,7 @@ namespace MathNet.Numerics.Data.Text
         public void WriteMatrix<TDataType>(Matrix<TDataType> matrix, Stream stream)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
-            if (matrix == null)
-            {
-                throw new ArgumentNullException("matrix");
-            }
-
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");
-            }
-
-            using (var writer = new StreamWriter(stream))
-            {
-                DoWriteMatrix(matrix, writer, Format, _formatProvider);
-            }
+            WriteStream(matrix, stream, Delimiter, ColumnHeaders, Format, FormatProvider);
         }
 
         /// <summary>
@@ -223,6 +114,23 @@ namespace MathNet.Numerics.Data.Text
         public void WriteMatrix<TDataType>(Matrix<TDataType> matrix, TextWriter writer)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
+            Write(matrix, writer, Delimiter, ColumnHeaders, Format, FormatProvider);
+        }
+
+        /// <summary>
+        /// Writes a matrix to the given TextWriter. Optionally accepts custom column headers, delimiter, number format and culture.
+        /// </summary>
+        /// <param name="matrix">The matrix to write.</param>
+        /// <param name="writer">The <see cref="TextWriter"/> to write the matrix to. Default ",".</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line.</param>
+        /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
+        /// <param name="format">The number format to use on each element. Default: null.</param>
+        /// <param name="formatProvider">The culture to use. Default: null.</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="writer"/> is <c>null</c>.</exception>
+        /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
+        public static void Write<TDataType>(Matrix<TDataType> matrix, TextWriter writer, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
+        {
             if (matrix == null)
             {
                 throw new ArgumentNullException("matrix");
@@ -233,7 +141,75 @@ namespace MathNet.Numerics.Data.Text
                 throw new ArgumentNullException("writer");
             }
 
-            DoWriteMatrix(matrix, writer, Format, _formatProvider);
+            if (columnHeaders != null && columnHeaders.Count > 0)
+            {
+                for (var i = 0; i < columnHeaders.Count - 1; i++)
+                {
+                    writer.Write(columnHeaders[i]);
+                    writer.Write(delimiter);
+                }
+
+                writer.WriteLine(columnHeaders[columnHeaders.Count - 1]);
+            }
+
+            var cols = matrix.ColumnCount - 1;
+            var rows = matrix.RowCount - 1;
+            for (var i = 0; i < matrix.RowCount; i++)
+            {
+                for (var j = 0; j < matrix.ColumnCount; j++)
+                {
+                    writer.Write(matrix[i, j].ToString(format, formatProvider));
+                    if (j != cols)
+                    {
+                        writer.Write(delimiter);
+                    }
+                }
+
+                if (i != rows)
+                {
+                    writer.Write(Environment.NewLine);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Writes a matrix to the given file. Optionally accepts custom column headers, delimiter, number format and culture.
+        /// </summary>
+        /// <param name="matrix">The matrix to write.</param>
+        /// <param name="filePath">The path and name of the file to write the matrix to. If the file already exists, the file will be overwritten.</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default ",".</param>
+        /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
+        /// <param name="format">The number format to use on each element. Default: null.</param>
+        /// <param name="formatProvider">The culture to use. Default: null.</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="writer"/> is <c>null</c>.</exception>
+        /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
+        public static void WriteFile<TDataType>(Matrix<TDataType> matrix, string filePath, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
+        {
+            using (var writer = new StreamWriter(filePath))
+            {
+                Write(matrix, writer, delimiter, columnHeaders, format, formatProvider);
+            }
+        }
+
+        /// <summary>
+        /// Writes a matrix to the given stream. Optionally accepts custom column headers, delimiter, number format and culture.
+        /// </summary>
+        /// <param name="matrix">The matrix to write.</param>
+        /// <param name="stream">The <see cref="Stream"/> to write the matrix to.</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default ",".</param>
+        /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
+        /// <param name="format">The number format to use on each element. Default: null.</param>
+        /// <param name="formatProvider">The culture to use. Default: null.</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="writer"/> is <c>null</c>.</exception>
+        /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
+        public static void WriteStream<TDataType>(Matrix<TDataType> matrix, Stream stream, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
+            where TDataType : struct, IEquatable<TDataType>, IFormattable
+        {
+            using (var writer = new StreamWriter(stream))
+            {
+                Write(matrix, writer, delimiter, columnHeaders, format, formatProvider);
+            }
         }
     }
 }
