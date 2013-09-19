@@ -30,7 +30,7 @@
 
 using System;
 using System.Collections.Generic;
-using MathNet.Numerics.LinearAlgebra.Generic;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace MathNet.Numerics.Data.Matlab
 {

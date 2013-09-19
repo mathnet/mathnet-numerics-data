@@ -34,8 +34,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Numerics;
 using System.Text;
-using MathNet.Numerics.LinearAlgebra.Double;
-using MathNet.Numerics.LinearAlgebra.Generic;
+using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Storage;
 using MathNet.Numerics.Properties;
 
@@ -49,22 +48,22 @@ namespace MathNet.Numerics.Data.Matlab
         /// <summary>
         /// The file header value
         /// </summary>
-        private const string HeaderText = "MATLAB 5.0 MAT-file, Platform: .NET 4 - Math.NET Numerics, Created on: ";
+        const string HeaderText = "MATLAB 5.0 MAT-file, Platform: .NET 4 - Math.NET Numerics, Created on: ";
 
         /// <summary>
         /// The length of the header text.
         /// </summary>
-        private const int HeaderTextLength = 116;
+        const int HeaderTextLength = 116;
 
         /// <summary>
         /// Have we written the header yet.
         /// </summary>
-        private bool _headerWritten;
+        bool _headerWritten;
 
         /// <summary>
         /// The binary writer to write to.
         /// </summary>
-        private BinaryWriter _writer;
+        BinaryWriter _writer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatlabMatrixWriter"/> class.
@@ -133,31 +132,31 @@ namespace MathNet.Numerics.Data.Matlab
 
             if (typeof (TDataType) == typeof (double))
             {
-                var o = matrix as SparseMatrix;
+                var o = matrix as LinearAlgebra.Double.SparseMatrix;
                 data = o != null
-                           ? GetSparseDataArray((SparseMatrix) (object) matrix, name)
-                           : GetDenseDataArray((Matrix) (object) matrix, name);
+                    ? GetSparseDataArray((LinearAlgebra.Double.SparseMatrix) (object) matrix, name)
+                    : GetDenseDataArray((LinearAlgebra.Double.Matrix) (object) matrix, name);
             }
             else if (typeof (TDataType) == typeof (float))
             {
                 var o = matrix as LinearAlgebra.Single.SparseMatrix;
                 data = o != null
-                           ? GetSparseDataArray((LinearAlgebra.Single.SparseMatrix) (object) matrix, name)
-                           : GetDenseDataArray((LinearAlgebra.Single.Matrix) (object) matrix, name);
+                    ? GetSparseDataArray((LinearAlgebra.Single.SparseMatrix) (object) matrix, name)
+                    : GetDenseDataArray((LinearAlgebra.Single.Matrix) (object) matrix, name);
             }
             else if (typeof (TDataType) == typeof (Complex))
             {
                 var o = matrix as LinearAlgebra.Complex.SparseMatrix;
                 data = o != null
-                           ? GetSparseDataArray((LinearAlgebra.Complex.SparseMatrix) (object) matrix, name)
-                           : GetDenseDataArray((LinearAlgebra.Complex.Matrix) (object) matrix, name);
+                    ? GetSparseDataArray((LinearAlgebra.Complex.SparseMatrix) (object) matrix, name)
+                    : GetDenseDataArray((LinearAlgebra.Complex.Matrix) (object) matrix, name);
             }
             else if (typeof (TDataType) == typeof (Complex32))
             {
                 var o = matrix as LinearAlgebra.Complex32.SparseMatrix;
                 data = o != null
-                           ? GetSparseDataArray((LinearAlgebra.Complex32.SparseMatrix) (object) matrix, name)
-                           : GetDenseDataArray((LinearAlgebra.Complex32.Matrix) (object) matrix, name);
+                    ? GetSparseDataArray((LinearAlgebra.Complex32.SparseMatrix) (object) matrix, name)
+                    : GetDenseDataArray((LinearAlgebra.Complex32.Matrix) (object) matrix, name);
             }
             else
             {
@@ -217,8 +216,8 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="rows">The number of rows.</param>
         /// <param name="columns">The columns of columns.</param>
         /// <param name="nzmax">The maximum number of non-zero elements.</param>
-        private static void WriteMatrixTagAndName(BinaryWriter writer, ArrayClass arrayClass, bool isComplex,
-                                                  string name, int rows, int columns, int nzmax)
+        static void WriteMatrixTagAndName(BinaryWriter writer, ArrayClass arrayClass, bool isComplex,
+            string name, int rows, int columns, int nzmax)
         {
             writer.Write((int) DataType.Matrix);
 
@@ -274,7 +273,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// </summary>
         /// <param name="data">The data to compress.</param>
         /// <returns>The compressed data.</returns>
-        private static byte[] CompressData(byte[] data)
+        static byte[] CompressData(byte[] data)
         {
             var adler = BitConverter.GetBytes(Adler32.Compute(data));
             using (var compressedStream = new MemoryStream())
@@ -299,7 +298,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetDenseDataArray(Matrix<double> matrix, string name)
+        static byte[] GetDenseDataArray(Matrix<double> matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -332,7 +331,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetDenseDataArray(Matrix<float> matrix, string name)
+        static byte[] GetDenseDataArray(Matrix<float> matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -369,7 +368,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetDenseDataArray(Matrix<Complex> matrix, string name)
+        static byte[] GetDenseDataArray(Matrix<Complex> matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -414,7 +413,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetDenseDataArray(Matrix<Complex32> matrix, string name)
+        static byte[] GetDenseDataArray(Matrix<Complex32> matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -464,7 +463,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetSparseDataArray(SparseMatrix matrix, string name)
+        static byte[] GetSparseDataArray(LinearAlgebra.Double.SparseMatrix matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -472,15 +471,15 @@ namespace MathNet.Numerics.Data.Matlab
             {
                 var nzmax = matrix.NonZerosCount;
                 WriteMatrixTagAndName(dataWriter, ArrayClass.Sparse, false, name, matrix.RowCount, matrix.ColumnCount,
-                                      nzmax);
+                    nzmax);
 
                 // write ir
                 dataWriter.Write((int) DataType.Int32);
                 dataWriter.Write(nzmax*4);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item1);
                     }
@@ -497,9 +496,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((matrix.ColumnCount + 1)*4);
                 dataWriter.Write(0);
                 var count = 0;
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    count += ((SparseVectorStorage<double>) column.Item2.Storage).ValueCount;
+                    count += ((SparseVectorStorage<double>) column.Storage).ValueCount;
                     dataWriter.Write(count);
                 }
 
@@ -513,9 +512,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((int) DataType.Double);
                 dataWriter.Write(nzmax*8);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item2);
                     }
@@ -533,7 +532,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetSparseDataArray(LinearAlgebra.Single.SparseMatrix matrix, string name)
+        static byte[] GetSparseDataArray(LinearAlgebra.Single.SparseMatrix matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -541,15 +540,15 @@ namespace MathNet.Numerics.Data.Matlab
             {
                 var nzmax = matrix.NonZerosCount;
                 WriteMatrixTagAndName(dataWriter, ArrayClass.Sparse, false, name, matrix.RowCount, matrix.ColumnCount,
-                                      nzmax);
+                    nzmax);
 
                 // write ir
                 dataWriter.Write((int) DataType.Int32);
                 dataWriter.Write(nzmax*4);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item1);
                     }
@@ -566,9 +565,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((matrix.ColumnCount + 1)*4);
                 dataWriter.Write(0);
                 var count = 0;
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    count += ((SparseVectorStorage<float>) column.Item2.Storage).ValueCount;
+                    count += ((SparseVectorStorage<float>) column.Storage).ValueCount;
                     dataWriter.Write(count);
                 }
 
@@ -582,9 +581,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((int) DataType.Single);
                 dataWriter.Write(nzmax*4);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item2);
                     }
@@ -605,7 +604,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetSparseDataArray(LinearAlgebra.Complex.SparseMatrix matrix, string name)
+        static byte[] GetSparseDataArray(LinearAlgebra.Complex.SparseMatrix matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -613,15 +612,15 @@ namespace MathNet.Numerics.Data.Matlab
             {
                 var nzmax = matrix.NonZerosCount;
                 WriteMatrixTagAndName(dataWriter, ArrayClass.Sparse, true, name, matrix.RowCount, matrix.ColumnCount,
-                                      nzmax);
+                    nzmax);
 
                 // write ir
                 dataWriter.Write((int) DataType.Int32);
                 dataWriter.Write(nzmax*4);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item1);
                     }
@@ -638,9 +637,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((matrix.ColumnCount + 1)*4);
                 dataWriter.Write(0);
                 var count = 0;
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    count += ((SparseVectorStorage<Complex>) column.Item2.Storage).ValueCount;
+                    count += ((SparseVectorStorage<Complex>) column.Storage).ValueCount;
                     dataWriter.Write(count);
                 }
 
@@ -654,9 +653,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((int) DataType.Double);
                 dataWriter.Write(nzmax*8);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item2.Real);
                     }
@@ -665,9 +664,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((int) DataType.Double);
                 dataWriter.Write(nzmax*8);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item2.Real);
                     }
@@ -685,7 +684,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="matrix">The matrix to get the data from.</param>
         /// <param name="name">The name of the matrix.</param>
         /// <returns>The matrix data as an array.</returns>
-        private static byte[] GetSparseDataArray(LinearAlgebra.Complex32.SparseMatrix matrix, string name)
+        static byte[] GetSparseDataArray(LinearAlgebra.Complex32.SparseMatrix matrix, string name)
         {
             byte[] data;
             using (var dataMemoryStream = new MemoryStream())
@@ -693,15 +692,15 @@ namespace MathNet.Numerics.Data.Matlab
             {
                 var nzmax = matrix.NonZerosCount;
                 WriteMatrixTagAndName(dataWriter, ArrayClass.Sparse, true, name, matrix.RowCount, matrix.ColumnCount,
-                                      nzmax);
+                    nzmax);
 
                 // write ir
                 dataWriter.Write((int) DataType.Int32);
                 dataWriter.Write(nzmax*4);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item1);
                     }
@@ -718,9 +717,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((matrix.ColumnCount + 1)*4);
                 dataWriter.Write(0);
                 var count = 0;
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    count += ((SparseVectorStorage<Complex32>) column.Item2.Storage).ValueCount;
+                    count += ((SparseVectorStorage<Complex32>) column.Storage).ValueCount;
                     dataWriter.Write(count);
                 }
 
@@ -734,9 +733,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((int) DataType.Single);
                 dataWriter.Write(nzmax*4);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item2.Real);
                     }
@@ -748,9 +747,9 @@ namespace MathNet.Numerics.Data.Matlab
                 dataWriter.Write((int) DataType.Single);
                 dataWriter.Write(nzmax*4);
 
-                foreach (var column in matrix.ColumnEnumerator())
+                foreach (var column in matrix.EnumerateColumns())
                 {
-                    foreach (var row in column.Item2.GetIndexedEnumerator())
+                    foreach (var row in column.EnumerateNonZeroIndexed())
                     {
                         dataWriter.Write(row.Item2.Real);
                     }
@@ -768,7 +767,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// Writes the compressed data.
         /// </summary>
         /// <param name="data">The data to write.</param>
-        private void WriteCompressedData(byte[] data)
+        void WriteCompressedData(byte[] data)
         {
             // fill in data size
             var size = BitConverter.GetBytes(data.Length);
@@ -788,7 +787,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <summary>
         /// Writes the file header.
         /// </summary>
-        private void WriteHeader()
+        void WriteHeader()
         {
             var header = Encoding.ASCII.GetBytes(HeaderText + DateTime.Now.ToString(Resources.MatlabDateHeaderFormat));
             _writer.Write(header);
@@ -808,7 +807,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="writer">Where to write the pad values.</param>
         /// <param name="bytes">The number of bytes to pad.</param>
         /// <param name="pad">What value to pad with.</param>
-        private static void PadData(BinaryWriter writer, int bytes, byte pad = (byte) 0)
+        static void PadData(BinaryWriter writer, int bytes, byte pad = (byte) 0)
         {
             for (var i = 0; i < bytes; i++)
             {

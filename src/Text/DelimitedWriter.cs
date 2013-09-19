@@ -31,7 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MathNet.Numerics.LinearAlgebra.Generic;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace MathNet.Numerics.Data.Text
 {

@@ -32,7 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MathNet.Numerics.LinearAlgebra.Generic;
+using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Properties;
 
 namespace MathNet.Numerics.Data.Matlab

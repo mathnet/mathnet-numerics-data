@@ -35,7 +35,7 @@ using System.IO.Compression;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
-using MathNet.Numerics.LinearAlgebra.Generic;
+using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Properties;
 
 namespace MathNet.Numerics.Data.Matlab
