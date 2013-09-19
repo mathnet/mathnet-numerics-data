@@ -33,7 +33,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Numerics;
-using System.Reflection;
 using System.Text;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Properties;
@@ -50,27 +49,27 @@ namespace MathNet.Numerics.Data.Matlab
         /// <summary>
         /// Large Block Size
         /// </summary>
-        private const int LargeBlockSize = 8;
+        const int LargeBlockSize = 8;
 
         /// <summary>
         /// Little Endian Indicator
         /// </summary>
-        private const byte LittleEndianIndicator = 0x49;
+        const byte LittleEndianIndicator = 0x49;
 
         /// <summary>
         /// Small Block Size
         /// </summary>
-        private const int SmallBlockSize = 4;
+        const int SmallBlockSize = 4;
 
         /// <summary>
         /// Holds the names of the matrices in the file.
         /// </summary>
-        private readonly IList<string> _names = new List<string>();
+        readonly IList<string> _names = new List<string>();
 
         /// <summary>
         /// The stream to read the matlab file from.
         /// </summary>
-        private readonly Stream _stream;
+        readonly Stream _stream;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatlabParser{TDataType}"/> class.
@@ -126,7 +125,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// Copies the names of the objects to retrieve to a local field.
         /// </summary>
         /// <param name="objectNames">The name of the objects to retrieve.</param>
-        private void SetNames(IEnumerable<string> objectNames)
+        void SetNames(IEnumerable<string> objectNames)
         {
             foreach (var name in objectNames)
             {
@@ -202,7 +201,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="stream">The stream.</param>
         /// <param name="size">The size of the array.</param>
         /// <param name="smallBlock">if set to <c>true</c> if reading from a small block.</param>
-        private static void AlignData(Stream stream, int size, bool smallBlock)
+        static void AlignData(Stream stream, int size, bool smallBlock)
         {
             var blockSize = smallBlock ? SmallBlockSize : LargeBlockSize;
             var offset = 0;
@@ -221,7 +220,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="compressed">The compressed data.</param>
         /// <param name="type">The type data type contained in the block.</param>
         /// <returns>The decompressed block.</returns>
-        private static byte[] DecompressBlock(byte[] compressed, out DataType type)
+        static byte[] DecompressBlock(byte[] compressed, out DataType type)
         {
             byte[] data;
             using (var compressedStream = new MemoryStream(compressed, 2, compressed.Length - 6))
@@ -249,7 +248,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// </summary>
         /// <param name="data">The data of the matrix.</param>
         /// <param name="file">The <see cref="MatlabFile{TDataType}"/> instance.</param>
-        private void AddMatrix(byte[] data, MatlabFile<TDataType> file)
+        void AddMatrix(byte[] data, MatlabFile<TDataType> file)
         {
             using (var ms = new MemoryStream(data))
             {
@@ -336,8 +335,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="columns">The number of columns.</param>
         /// <param name="size">The size of the block.</param>
         /// <returns>A populated sparse matrix.</returns>
-        private static Matrix<TDataType> PopulateSparseMatrix(BinaryReader reader, bool isComplex, int rows, int columns,
-                                                              int size)
+        static Matrix<TDataType> PopulateSparseMatrix(BinaryReader reader, bool isComplex, int rows, int columns, int size)
         {
             // populate the row data array
             var ir = new int[size/4];
@@ -364,15 +362,14 @@ namespace MathNet.Numerics.Data.Matlab
             var type = (DataType) reader.ReadInt32();
             var dataSize = reader.ReadInt32();
 
-            var matrix = CreateMatrix(true, rows, columns);
+            var matrix = Matrix<TDataType>.Builder.SparseMatrix(rows, columns);
             var dataType = typeof (TDataType);
 
             if (dataType == typeof (double))
             {
                 if (isComplex)
                 {
-                    throw new ArgumentException(
-                        "Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
+                    throw new ArgumentException("Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
                 }
 
                 PopulateDoubleSparseMatrix((Matrix<double>) (object) matrix, type, ir, jc, reader);
@@ -381,8 +378,7 @@ namespace MathNet.Numerics.Data.Matlab
             {
                 if (isComplex)
                 {
-                    throw new ArgumentException(
-                        "Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
+                    throw new ArgumentException("Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
                 }
 
                 PopulateSingleSparseMatrix((Matrix<float>) (object) matrix, type, ir, jc, reader);
@@ -393,8 +389,7 @@ namespace MathNet.Numerics.Data.Matlab
             }
             else if (dataType == typeof (Complex32))
             {
-                PopulateComplex32SparseMatrix((Matrix<Complex32>) (object) matrix, type, isComplex, ir, jc, reader,
-                                              dataSize);
+                PopulateComplex32SparseMatrix((Matrix<Complex32>) (object) matrix, type, isComplex, ir, jc, reader, dataSize);
             }
             else
             {
@@ -412,8 +407,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="ir">The row indices.</param>
         /// <param name="jc">The column indices.</param>
         /// <param name="reader">The reader to read from.</param>
-        private static void PopulateDoubleSparseMatrix(Matrix<double> matrix, DataType type, IList<int> ir,
-                                                       IList<int> jc, BinaryReader reader)
+        static void PopulateDoubleSparseMatrix(Matrix<double> matrix, DataType type, IList<int> ir, IList<int> jc, BinaryReader reader)
         {
             var col = 0;
             for (var i = 0; i < ir.Count; i++)
@@ -470,8 +464,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="ir">The row indices.</param>
         /// <param name="jc">The column indices.</param>
         /// <param name="reader">The reader to read from.</param>
-        private static void PopulateSingleSparseMatrix(Matrix<float> matrix, DataType type, IList<int> ir, IList<int> jc,
-                                                       BinaryReader reader)
+        static void PopulateSingleSparseMatrix(Matrix<float> matrix, DataType type, IList<int> ir, IList<int> jc, BinaryReader reader)
         {
             var col = 0;
             for (var i = 0; i < ir.Count; i++)
@@ -530,8 +523,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="jc">The column indices.</param>
         /// <param name="reader">The reader to read from.</param>
         /// <param name="dataSize">The length of the stored data.</param>
-        private static void PopulateComplexSparseMatrix(Matrix<Complex> matrix, DataType type, bool isComplex,
-                                                        IList<int> ir, IList<int> jc, BinaryReader reader, int dataSize)
+        static void PopulateComplexSparseMatrix(Matrix<Complex> matrix, DataType type, bool isComplex, IList<int> ir, IList<int> jc, BinaryReader reader, int dataSize)
         {
             var col = 0;
             for (var i = 0; i < ir.Count; i++)
@@ -648,9 +640,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="jc">The column indices.</param>
         /// <param name="reader">The reader to read from.</param>
         /// <param name="dataSize">The length of the stored data.</param>
-        private static void PopulateComplex32SparseMatrix(Matrix<Complex32> matrix, DataType type, bool isComplex,
-                                                          IList<int> ir, IList<int> jc, BinaryReader reader,
-                                                          int dataSize)
+        static void PopulateComplex32SparseMatrix(Matrix<Complex32> matrix, DataType type, bool isComplex, IList<int> ir, IList<int> jc, BinaryReader reader, int dataSize)
         {
             var col = 0;
             for (var i = 0; i < ir.Count; i++)
@@ -768,8 +758,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="columns">The number of columns.</param>
         /// <param name="size">The length of the stored data.</param>
         /// <returns>Returns a populated dense matrix.</returns>
-        private static Matrix<TDataType> PopulateDenseMatrix(DataType type, BinaryReader reader, bool isComplex,
-                                                             int rows, int columns, int size)
+        static Matrix<TDataType> PopulateDenseMatrix(DataType type, BinaryReader reader, bool isComplex, int rows, int columns, int size)
         {
             var dataType = typeof (TDataType);
             Matrix<TDataType> matrix;
@@ -777,28 +766,25 @@ namespace MathNet.Numerics.Data.Matlab
             {
                 var count = rows*columns;
                 var data = new double[count];
-                Buffer.BlockCopy(reader.ReadBytes(count*Constants.SizeOfDouble), 0, data, 0,
-                                 count*Constants.SizeOfDouble);
-                matrix = (Matrix<TDataType>)(object)new LinearAlgebra.Double.DenseMatrix(rows, columns, data);
+                Buffer.BlockCopy(reader.ReadBytes(count*Constants.SizeOfDouble), 0, data, 0, count*Constants.SizeOfDouble);
+                matrix = (Matrix<TDataType>) (object) new LinearAlgebra.Double.DenseMatrix(rows, columns, data);
             }
             else if (type == DataType.Single && dataType == typeof (float))
             {
                 var count = rows*columns;
                 var data = new float[count];
-                Buffer.BlockCopy(reader.ReadBytes(count*Constants.SizeOfFloat), 0, data, 0,
-                                 count*Constants.SizeOfFloat);
+                Buffer.BlockCopy(reader.ReadBytes(count*Constants.SizeOfFloat), 0, data, 0, count*Constants.SizeOfFloat);
                 matrix = (Matrix<TDataType>) (object) new LinearAlgebra.Single.DenseMatrix(rows, columns, data);
             }
             else
             {
-                matrix = CreateMatrix(false, rows, columns);
+                matrix = Matrix<TDataType>.Builder.DenseMatrix(rows, columns);
 
                 if (dataType == typeof (double))
                 {
                     if (isComplex)
                     {
-                        throw new ArgumentException(
-                            "Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
+                        throw new ArgumentException("Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
                     }
 
                     PopulateDoubleDenseMatrix((Matrix<double>) (object) matrix, type, reader, rows, columns);
@@ -807,21 +793,18 @@ namespace MathNet.Numerics.Data.Matlab
                 {
                     if (isComplex)
                     {
-                        throw new ArgumentException(
-                            "Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
+                        throw new ArgumentException("Invalid TDataType. Matrix is stored as a complex matrix, but a real data type was given.");
                     }
 
                     PopulateSingleDenseMatrix((Matrix<float>) (object) matrix, type, reader, rows, columns);
                 }
                 else if (dataType == typeof (Complex))
                 {
-                    PopulateComplexDenseMatrix((Matrix<Complex>) (object) matrix, type, isComplex, reader, rows, columns,
-                                               size);
+                    PopulateComplexDenseMatrix((Matrix<Complex>) (object) matrix, type, isComplex, reader, rows, columns, size);
                 }
                 else if (dataType == typeof (Complex32))
                 {
-                    PopulateComplex32DenseMatrix((Matrix<Complex32>) (object) matrix, type, isComplex, reader, rows,
-                                                 columns, size);
+                    PopulateComplex32DenseMatrix((Matrix<Complex32>) (object) matrix, type, isComplex, reader, rows, columns, size);
                 }
                 else
                 {
@@ -839,8 +822,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="reader">The reader to read from.</param>
         /// <param name="rows">The number of rows.</param>
         /// <param name="columns">The number of columns.</param>
-        public static void PopulateDoubleDenseMatrix(Matrix<double> matrix, DataType type, BinaryReader reader, int rows,
-                                                     int columns)
+        public static void PopulateDoubleDenseMatrix(Matrix<double> matrix, DataType type, BinaryReader reader, int rows, int columns)
         {
             switch (type)
             {
@@ -959,8 +941,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="rows">The number of rows.</param>
         /// <param name="columns">The number of columns.</param>
         /// <param name="dataSize">The length of the stored data.</param>
-        public static void PopulateComplexDenseMatrix(Matrix<Complex> matrix, DataType type, bool isComplex,
-                                                      BinaryReader reader, int rows, int columns, int dataSize)
+        public static void PopulateComplexDenseMatrix(Matrix<Complex> matrix, DataType type, bool isComplex, BinaryReader reader, int rows, int columns, int dataSize)
         {
             switch (type)
             {
@@ -1197,8 +1178,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="rows">The number of rows.</param>
         /// <param name="columns">The number of columns.</param>
         /// <param name="dataSize">The length of the stored data.</param>
-        public static void PopulateComplex32DenseMatrix(Matrix<Complex32> matrix, DataType type, bool isComplex,
-                                                        BinaryReader reader, int rows, int columns, int dataSize)
+        public static void PopulateComplex32DenseMatrix(Matrix<Complex32> matrix, DataType type, bool isComplex, BinaryReader reader, int rows, int columns, int dataSize)
         {
             switch (type)
             {
@@ -1414,8 +1394,7 @@ namespace MathNet.Numerics.Data.Matlab
                         {
                             for (var i = 0; i < rows; i++)
                             {
-                                matrix.At(i, j,
-                                          new Complex32(matrix.At(i, j).Real, Convert.ToSingle(reader.ReadDouble())));
+                                matrix.At(i, j, new Complex32(matrix.At(i, j).Real, Convert.ToSingle(reader.ReadDouble())));
                             }
                         }
 
@@ -1434,8 +1413,7 @@ namespace MathNet.Numerics.Data.Matlab
         /// <param name="reader">The reader to read from.</param>
         /// <param name="rows">The number of rows.</param>
         /// <param name="columns">The number of columns.</param>
-        public static void PopulateSingleDenseMatrix(Matrix<float> matrix, DataType type, BinaryReader reader, int rows,
-                                                     int columns)
+        public static void PopulateSingleDenseMatrix(Matrix<float> matrix, DataType type, BinaryReader reader, int rows, int columns)
         {
             switch (type)
             {
@@ -1542,74 +1520,6 @@ namespace MathNet.Numerics.Data.Matlab
                 default:
                     throw new NotSupportedException();
             }
-        }
-
-        /// <summary>
-        /// Creates a matrix.
-        /// </summary>
-        /// <param name="sparse">if set to <c>true</c>, creates a sparse matrix.</param>
-        /// <param name="rows">The number of rows.</param>
-        /// <param name="columns">The number of columns.</param>
-        /// <returns>A matrix with the specified storage.</returns>
-        private static Matrix<TDataType> CreateMatrix(bool sparse, int rows, int columns)
-        {
-            ConstructorInfo constructor;
-            var dataType = typeof (TDataType);
-
-            if (sparse)
-            {
-                if (dataType == typeof (double))
-                {
-                    constructor = typeof (LinearAlgebra.Double.SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else if (dataType == typeof (float))
-                {
-                    constructor =
-                        typeof (LinearAlgebra.Single.SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else if (dataType == typeof (Complex))
-                {
-                    constructor =
-                        typeof (LinearAlgebra.Complex.SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else if (dataType == typeof (Complex32))
-                {
-                    constructor =
-                        typeof (LinearAlgebra.Complex32.SparseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
-            }
-            else
-            {
-                if (dataType == typeof (double))
-                {
-                    constructor = typeof (LinearAlgebra.Double.DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else if (dataType == typeof (float))
-                {
-                    constructor =
-                        typeof (LinearAlgebra.Single.DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else if (dataType == typeof (Complex))
-                {
-                    constructor =
-                        typeof (LinearAlgebra.Complex.DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else if (dataType == typeof (Complex32))
-                {
-                    constructor =
-                        typeof (LinearAlgebra.Complex32.DenseMatrix).GetConstructor(new[] {typeof (int), typeof (int)});
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
-            }
-
-            return (Matrix<TDataType>) constructor.Invoke(new object[] {rows, columns});
         }
     }
 }

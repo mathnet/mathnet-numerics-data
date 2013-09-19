@@ -173,7 +173,7 @@ namespace MathNet.Numerics.Data.Text
             }
 
             var parse = CreateParser<TDataType>(formatProvider);
-            var matrix = CreateMatrix<TDataType>(data.Count, max, sparse);
+            var matrix = sparse ? Matrix<TDataType>.Builder.SparseMatrix(data.Count, max) : Matrix<TDataType>.Builder.DenseMatrix(data.Count, max);
             var storage = matrix.Storage;
 
             for (var i = 0; i < data.Count; i++)
@@ -229,36 +229,6 @@ namespace MathNet.Numerics.Data.Text
             {
                 return Read<TDataType>(reader, sparse, delimiter, hasHeaders, formatProvider);
             }
-        }
-
-        static Matrix<T> CreateMatrix<T>(int rows, int cols, bool sparse)
-            where T : struct, IEquatable<T>, IFormattable
-        {
-            if (typeof (T) == typeof (double))
-            {
-                return sparse
-                    ? (Matrix<T>) (object) new LinearAlgebra.Double.SparseMatrix(rows, cols)
-                    : (Matrix<T>) (object) new LinearAlgebra.Double.DenseMatrix(rows, cols);
-            }
-            if (typeof (T) == typeof (float))
-            {
-                return sparse
-                    ? (Matrix<T>) (object) new LinearAlgebra.Single.SparseMatrix(rows, cols)
-                    : (Matrix<T>) (object) new LinearAlgebra.Single.DenseMatrix(rows, cols);
-            }
-            if (typeof (T) == typeof (Complex))
-            {
-                return sparse
-                    ? (Matrix<T>) (object) new LinearAlgebra.Complex.SparseMatrix(rows, cols)
-                    : (Matrix<T>) (object) new LinearAlgebra.Complex.DenseMatrix(rows, cols);
-            }
-            if (typeof (T) == typeof (Complex32))
-            {
-                return sparse
-                    ? (Matrix<T>) (object) new LinearAlgebra.Complex32.SparseMatrix(rows, cols)
-                    : (Matrix<T>) (object) new LinearAlgebra.Complex32.DenseMatrix(rows, cols);
-            }
-            throw new NotSupportedException();
         }
 
         static Func<string, T> CreateParser<T>(IFormatProvider formatProvider)
