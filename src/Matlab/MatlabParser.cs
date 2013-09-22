@@ -362,7 +362,7 @@ namespace MathNet.Numerics.Data.Matlab
             var type = (DataType) reader.ReadInt32();
             var dataSize = reader.ReadInt32();
 
-            var matrix = Matrix<TDataType>.Builder.SparseMatrix(rows, columns);
+            var matrix = Matrix<TDataType>.Build.SparseMatrix(rows, columns);
             var dataType = typeof (TDataType);
 
             if (dataType == typeof (double))
@@ -778,7 +778,7 @@ namespace MathNet.Numerics.Data.Matlab
             }
             else
             {
-                matrix = Matrix<TDataType>.Builder.DenseMatrix(rows, columns);
+                matrix = Matrix<TDataType>.Build.DenseMatrix(rows, columns);
 
                 if (dataType == typeof (double))
                 {

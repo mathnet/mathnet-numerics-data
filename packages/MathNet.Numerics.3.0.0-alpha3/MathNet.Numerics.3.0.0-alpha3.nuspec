@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>MathNet.Numerics</id>
-    <version>3.0.0-alpha2</version>
+    <version>3.0.0-alpha3</version>
     <title>Math.NET Numerics</title>
     <authors>Marcus Cuda, Christoph Ruegg, Jurgen Van Gael</authors>
     <owners>Marcus Cuda, Christoph Ruegg, Jurgen Van Gael</owners>
