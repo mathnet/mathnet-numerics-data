@@ -28,7 +28,9 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
+using System.IO;
 using System.Numerics;
+using System.Text;
 using MathNet.Numerics.Data.Text;
 using NUnit.Framework;
 
@@ -97,6 +99,61 @@ namespace MathNet.Numerics.Data.UnitTests.Text
             Assert.AreEqual(0.0f, m[1616, 1628].Imaginary);
             Assert.AreEqual(7.9403870156486e+07f, m[905, 726].Real);
             Assert.AreEqual(0.0f, m[905, 726].Imaginary);
+        }
+
+        [Test]
+        public void CanReadSparseHermitianComplexMatrix()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("%%MatrixMarket matrix coordinate complex hermitian");
+            sb.AppendLine("5 5 7");
+            sb.AppendLine("1 1  1.0 0");
+            sb.AppendLine("2 2  10.5 0");
+            sb.AppendLine("4 2  250.5 22.22");
+            sb.AppendLine("3 3  1.5e-2 0");
+            sb.AppendLine("4 4  -2.8e2 0.0");
+            sb.AppendLine("5 5  12. 0.");
+            sb.AppendLine("5 4  0 33.32");
+
+            var m = MatrixMarketReader.ReadMatrix<Complex>(new StringReader(sb.ToString()));
+            Assert.IsInstanceOf<LinearAlgebra.Complex.SparseMatrix>(m);
+            Assert.AreEqual(5, m.RowCount);
+            Assert.AreEqual(5, m.ColumnCount);
+            Assert.AreEqual(9, ((LinearAlgebra.Complex.SparseMatrix)m).NonZerosCount);
+            Assert.AreEqual(1.0d, m[0, 0].Real);
+            Assert.AreEqual(10.5d, m[1, 1].Real);
+            Assert.AreEqual(250.5d, m[3, 1].Real);
+            Assert.AreEqual(22.22d, m[3, 1].Imaginary);
+            Assert.AreEqual(-22.22d, m[1, 3].Imaginary);
+            Assert.AreEqual(-280d, m[3, 3].Real);
+            Assert.AreEqual(0d, m[4, 3].Real);
+            Assert.AreEqual(33.32d, m[4, 3].Imaginary);
+            Assert.AreEqual(-33.32d, m[3, 4].Imaginary);
+        }
+
+        [Test]
+        public void CanReadDenseSkewSymmetricMatrix()
+        {
+            /*  0  1  2  3
+                1  0  6  7
+                2  6  0 11
+                3  7 11  0  */
+
+            var sb = new StringBuilder();
+            sb.AppendLine("%%MatrixMarket matrix array integer skew-symmetric");
+            sb.AppendLine("4 4");
+            sb.Append("1\n2\n3\n6\n7\n11");
+
+            var m = MatrixMarketReader.ReadMatrix<double>(new StringReader(sb.ToString()));
+            Assert.IsInstanceOf<LinearAlgebra.Double.DenseMatrix>(m);
+            Assert.AreEqual(4, m.RowCount);
+            Assert.AreEqual(4, m.ColumnCount);
+            Assert.AreEqual(0.0, m.Diagonal().InfinityNorm());
+            Assert.AreEqual(0d, m[0, 0]);
+            Assert.AreEqual(1d, m[1, 0]);
+            Assert.AreEqual(1d, m[0, 1]);
+            Assert.AreEqual(7d, m[3, 1]);
+            Assert.AreEqual(7d, m[1, 3]);
         }
     }
 }
