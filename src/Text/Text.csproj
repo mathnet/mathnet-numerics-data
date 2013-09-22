@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="DelimitedReader.cs" />
     <Compile Include="DelimitedWriter.cs" />
+    <Compile Include="MatrixMarketReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
