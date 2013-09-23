@@ -54,6 +54,7 @@
     <Compile Include="Text\DelimitedReaderTests.cs" />
     <Compile Include="Text\DelimitedWriterTests.cs" />
     <Compile Include="Text\MatrixMarketReaderTests.cs" />
+    <Compile Include="Text\MatrixMarketWriterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\data\Matlab\A.mat">
