@@ -83,7 +83,7 @@ namespace MathNet.Numerics.Data.Text
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
         /// <param name="filePath">The file to write the matrix to.</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="file"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="filePath"/> is <c>null</c>.</exception>
         /// <typeparam name="TDataType">The data type of the Matrix. It can be either: double, float, Complex, or Complex32.</typeparam>
         public void WriteMatrix<TDataType>(Matrix<TDataType> matrix, string filePath)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
@@ -181,7 +181,7 @@ namespace MathNet.Numerics.Data.Text
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
         /// <param name="formatProvider">The culture to use. Default: null.</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="writer"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="filePath"/> is <c>null</c>.</exception>
         /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
         public static void WriteFile<TDataType>(Matrix<TDataType> matrix, string filePath, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
@@ -201,7 +201,7 @@ namespace MathNet.Numerics.Data.Text
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
         /// <param name="formatProvider">The culture to use. Default: null.</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="writer"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="stream"/> is <c>null</c>.</exception>
         /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
         public static void WriteStream<TDataType>(Matrix<TDataType> matrix, Stream stream, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
             where TDataType : struct, IEquatable<TDataType>, IFormattable

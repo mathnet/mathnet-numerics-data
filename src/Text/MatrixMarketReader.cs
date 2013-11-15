@@ -124,7 +124,7 @@ namespace MathNet.Numerics.Data.Text
             if (sparse)
             {
                 var indexed = ReadTokenLines(reader).Select(tokens => new Tuple<int, int, T>(int.Parse(tokens[0]) - 1, int.Parse(tokens[1]) - 1, parse(2, tokens)));
-                return Matrix<T>.Build.SparseMatrixOfIndexed(rows, cols, symmetry == MatrixMarketSymmetry.General ? indexed : ExpandSparse(symmetry, indexed));
+                return Matrix<T>.Build.SparseOfIndexed(rows, cols, symmetry == MatrixMarketSymmetry.General ? indexed : ExpandSparse(symmetry, indexed));
             }
 
             var columnMajor = ReadTokenLines(reader).Select(tokens => parse(0, tokens));
@@ -132,15 +132,15 @@ namespace MathNet.Numerics.Data.Text
             {
                 case MatrixMarketSymmetry.General:
                 {
-                    return Matrix<T>.Build.DenseMatrixOfColumnMajor(rows, cols, columnMajor);
+                    return Matrix<T>.Build.DenseOfColumnMajor(rows, cols, columnMajor);
                 }
                 case MatrixMarketSymmetry.Symmetric:
                 {
-                    var m = Matrix<T>.Build.DenseMatrix(rows, cols);
+                    var m = Matrix<T>.Build.Dense(rows, cols);
                     int k = 0;
                     foreach (var slice in SliceDecreasing(rows, columnMajor))
                     {
-                        var vector = Vector<T>.Build.DenseVector(slice);
+                        var vector = Vector<T>.Build.Dense(slice);
                         m.SetColumn(k, k, rows - k, vector);
                         m.SetRow(k, k, cols - k, vector);
                         k++;
@@ -149,11 +149,11 @@ namespace MathNet.Numerics.Data.Text
                 }
                 case MatrixMarketSymmetry.Hermitian:
                 {
-                    var m = Matrix<T>.Build.DenseMatrix(rows, cols);
+                    var m = Matrix<T>.Build.Dense(rows, cols);
                     int k = 0;
                     foreach (var slice in SliceDecreasing(rows, columnMajor))
                     {
-                        var vector = Vector<T>.Build.DenseVector(slice);
+                        var vector = Vector<T>.Build.Dense(slice);
                         m.SetColumn(k, k, rows - k, vector);
                         m.SetRow(k, k, cols - k, vector.Conjugate());
                         k++;
@@ -162,11 +162,11 @@ namespace MathNet.Numerics.Data.Text
                 }
                 case MatrixMarketSymmetry.SkewSymmetric:
                 {
-                    var m = Matrix<T>.Build.DenseMatrix(rows, cols);
+                    var m = Matrix<T>.Build.Dense(rows, cols);
                     int k = 0;
                     foreach (var slice in SliceDecreasing(rows - 1, columnMajor))
                     {
-                        var vector = Vector<T>.Build.DenseVector(slice);
+                        var vector = Vector<T>.Build.Dense(slice);
                         m.SetColumn(k, k + 1, rows - 1 - k, vector);
                         m.SetRow(k, k + 1, cols - 1 - k, vector);
                         k++;
@@ -193,10 +193,10 @@ namespace MathNet.Numerics.Data.Text
             if (sparse)
             {
                 var indexedSeq = ReadTokenLines(reader).Select(tokens => new Tuple<int, T>(int.Parse(tokens[0]) - 1, parse(1, tokens)));
-                return Vector<T>.Build.SparseVectorOfIndexed(length, indexedSeq);
+                return Vector<T>.Build.SparseOfIndexed(length, indexedSeq);
             }
 
-            return Vector<T>.Build.DenseVector(ReadTokenLines(reader).Select(tokens => parse(0, tokens)).ToArray());
+            return Vector<T>.Build.Dense(ReadTokenLines(reader).Select(tokens => parse(0, tokens)).ToArray());
         }
 
         static void ExpectHeader(TextReader reader, bool matrix, out bool complex, out bool sparse, out MatrixMarketSymmetry symmetry)

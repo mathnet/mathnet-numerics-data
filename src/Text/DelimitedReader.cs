@@ -173,7 +173,7 @@ namespace MathNet.Numerics.Data.Text
             }
 
             var parse = CreateParser<TDataType>(formatProvider);
-            var matrix = sparse ? Matrix<TDataType>.Build.SparseMatrix(data.Count, max) : Matrix<TDataType>.Build.DenseMatrix(data.Count, max);
+            var matrix = sparse ? Matrix<TDataType>.Build.Sparse(data.Count, max) : Matrix<TDataType>.Build.Dense(data.Count, max);
             var storage = matrix.Storage;
 
             for (var i = 0; i < data.Count; i++)

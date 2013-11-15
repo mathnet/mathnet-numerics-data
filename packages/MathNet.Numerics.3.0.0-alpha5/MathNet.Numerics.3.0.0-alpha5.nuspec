@@ -2,10 +2,10 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>MathNet.Numerics</id>
-    <version>3.0.0-alpha4</version>
+    <version>3.0.0-alpha5</version>
     <title>Math.NET Numerics</title>
-    <authors>Marcus Cuda, Christoph Ruegg, Jurgen Van Gael</authors>
-    <owners>Marcus Cuda, Christoph Ruegg, Jurgen Van Gael</owners>
+    <authors>Christoph Ruegg, Marcus Cuda, Jurgen Van Gael</authors>
+    <owners>Christoph Ruegg, Marcus Cuda, Jurgen Van Gael</owners>
     <licenseUrl>http://mathnetnumerics.codeplex.com/license</licenseUrl>
     <projectUrl>http://numerics.mathdotnet.com/</projectUrl>
     <iconUrl>http://www.mathdotnet.com/images/MathNet128.png</iconUrl>
@@ -14,7 +14,7 @@
     <summary>Math.NET Numerics, providing methods and algorithms for numerical computations in science, engineering and every day use. Supports .Net 4 and higher, SL5, WP8 and .NET for Windows Store apps.</summary>
     <tags>math numeric statistics probability integration interpolation linear algebra matrix fft</tags>
     <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.Numerics" targetFramework="" />
+      <frameworkAssembly assemblyName="System.Numerics" targetFramework=".NETFramework4.0, .NETFramework4.5, Windows8.0, Silverlight5.0" />
     </frameworkAssemblies>
   </metadata>
 </package>
