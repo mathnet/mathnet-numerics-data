@@ -128,7 +128,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
 
             Assert.AreEqual(100, a.RowCount);
             Assert.AreEqual(100, a.ColumnCount);
-            AssertHelpers.AlmostEqual(27.232498979698409, a.L2Norm(), 15);
+            AssertHelpers.AlmostEqual(27.232498979698409, a.L2Norm(), 13);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
 
             Assert.AreEqual(100, a.RowCount);
             Assert.AreEqual(100, a.ColumnCount);
-            AssertHelpers.AlmostEqual(13.223654390985379, a.L2Norm(), 15);
+            AssertHelpers.AlmostEqual(13.223654390985379, a.L2Norm(), 13);
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
 
             Assert.AreEqual(100, a.RowCount);
             Assert.AreEqual(100, a.ColumnCount);
-            AssertHelpers.AlmostEqual(27.232498979698409, a.L2Norm().Real, 6);
+            AssertHelpers.AlmostEqual(27.232498979698409, a.L2Norm(), 6);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
 
             Assert.AreEqual(100, a.RowCount);
             Assert.AreEqual(100, a.ColumnCount);
-            AssertHelpers.AlmostEqual(13.223654390985379, a.L2Norm().Real, 5);
+            AssertHelpers.AlmostEqual(13.223654390985379, a.L2Norm(), 5);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
             Assert.AreEqual(100, matrix.RowCount);
             Assert.AreEqual(100, matrix.ColumnCount);
             Assert.AreEqual(typeof(LinearAlgebra.Complex32.DenseMatrix), matrix.GetType());
-            AssertHelpers.AlmostEqual(100.108979553704, matrix.FrobeniusNorm().Real, 6);
+            AssertHelpers.AlmostEqual(100.108979553704, matrix.FrobeniusNorm(), 6);
         }
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
             var ad = matrices["Ad"];
             Assert.AreEqual(100, ad.RowCount);
             Assert.AreEqual(100, ad.ColumnCount);
-            AssertHelpers.AlmostEqual(100.431635988639, ad.FrobeniusNorm().Real, 6);
+            AssertHelpers.AlmostEqual(100.431635988639, ad.FrobeniusNorm(), 6);
             Assert.AreEqual(typeof(LinearAlgebra.Complex32.DenseMatrix), ad.GetType());
         }
 
@@ -339,7 +339,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
             Assert.AreEqual(100, matrix.RowCount);
             Assert.AreEqual(100, matrix.ColumnCount);
             Assert.AreEqual(typeof(LinearAlgebra.Complex32.SparseMatrix), matrix.GetType());
-            AssertHelpers.AlmostEqual(17.6385090630805, matrix.FrobeniusNorm().Real, 6);
+            AssertHelpers.AlmostEqual(17.6385090630805, matrix.FrobeniusNorm(), 6);
         }
 
         /// <summary>

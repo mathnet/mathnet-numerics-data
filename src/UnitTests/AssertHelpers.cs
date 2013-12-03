@@ -109,7 +109,7 @@ namespace MathNet.Numerics.Data.UnitTests
                 return;
             }
 
-            var pass = expected.AlmostEqualInDecimalPlaces(actual, decimalPlaces);
+            var pass = expected.AlmostEqualRelative(actual, decimalPlaces);
             if (!pass)
             {
                 // signals Gallio that the test failed.
@@ -131,7 +131,7 @@ namespace MathNet.Numerics.Data.UnitTests
                 return;
             }
 
-            var pass = expected.AlmostEqualInDecimalPlaces(actual, decimalPlaces);
+            var pass = expected.AlmostEqualRelative(actual, decimalPlaces);
             if (!pass)
             {
                 // signals Gallio that the test failed.
@@ -147,13 +147,13 @@ namespace MathNet.Numerics.Data.UnitTests
         /// <param name="decimalPlaces">The number of decimal places to agree on.</param>
         public static void AlmostEqual(Complex expected, Complex actual, int decimalPlaces)
         {
-            var pass = expected.Real.AlmostEqualInDecimalPlaces(actual.Real, decimalPlaces);
+            var pass = expected.Real.AlmostEqualRelative(actual.Real, decimalPlaces);
             if (!pass)
             {
                 Assert.Fail("Real components are not equal within {0} places. Expected:{1}; Actual:{2}", decimalPlaces, expected.Real, actual.Real);
             }
 
-            pass = expected.Imaginary.AlmostEqualInDecimalPlaces(actual.Imaginary, decimalPlaces);
+            pass = expected.Imaginary.AlmostEqualRelative(actual.Imaginary, decimalPlaces);
             if (!pass)
             {
                 Assert.Fail("Imaginary components are not equal within {0} places. Expected:{1}; Actual:{2}", decimalPlaces, expected.Imaginary, actual.Imaginary);
@@ -168,13 +168,13 @@ namespace MathNet.Numerics.Data.UnitTests
         /// <param name="decimalPlaces">The number of decimal places to agree on.</param>
         public static void AlmostEqual(Complex32 expected, Complex32 actual, int decimalPlaces)
         {
-            var pass = expected.Real.AlmostEqualInDecimalPlaces(actual.Real, decimalPlaces);
+            var pass = expected.Real.AlmostEqualRelative(actual.Real, decimalPlaces);
             if (!pass)
             {
                 Assert.Fail("Real components are not equal within {0} places. Expected:{1}; Actual:{2}", decimalPlaces, expected.Real, actual.Real);
             }
 
-            pass = expected.Imaginary.AlmostEqualInDecimalPlaces(actual.Imaginary, decimalPlaces);
+            pass = expected.Imaginary.AlmostEqualRelative(actual.Imaginary, decimalPlaces);
             if (!pass)
             {
                 Assert.Fail("Imaginary components are not equal within {0} places. Expected:{1}; Actual:{2}", decimalPlaces, expected.Imaginary, actual.Imaginary);
@@ -193,7 +193,7 @@ namespace MathNet.Numerics.Data.UnitTests
         public static void AlmostEqual<T>(T expected, T actual, double maximumError)
             where T : IPrecisionSupport<T>
         {
-            if (!actual.AlmostEqualWithError(expected, maximumError))
+            if (!actual.AlmostEqualNorm(expected, maximumError))
             {
                 Assert.Fail("Not equal within a maximum error {0}. Expected:{1}; Actual:{2}", maximumError, expected, actual);
             }
@@ -210,7 +210,7 @@ namespace MathNet.Numerics.Data.UnitTests
         {
             for (var i = 0; i < expected.Count; i++)
             {
-                if (!actual[i].AlmostEqualWithError(expected[i], maximumError))
+                if (!actual[i].AlmostEqual(expected[i], maximumError))
                 {
                     Assert.Fail("Not equal within a maximum error {0}. Expected:{1}; Actual:{2}", maximumError, expected[i], actual[i]);
                 }
@@ -228,7 +228,7 @@ namespace MathNet.Numerics.Data.UnitTests
         {
             for (var i = 0; i < expected.Count; i++)
             {
-                if (!actual[i].AlmostEqualWithError(expected[i], maximumError))
+                if (!actual[i].AlmostEqual(expected[i], maximumError))
                 {
                     Assert.Fail("Not equal within a maximum error {0}. Expected:{1}; Actual:{2}", maximumError, expected[i], actual[i]);
                 }
@@ -249,7 +249,7 @@ namespace MathNet.Numerics.Data.UnitTests
         {
             for (var i = 0; i < expected.Count; i++)
             {
-                if (!actual[i].AlmostEqualWithError(expected[i], maximumError))
+                if (!actual[i].AlmostEqualNorm(expected[i], maximumError))
                 {
                     Assert.Fail("Not equal within a maximum error {0}. Expected:{1}; Actual:{2}", maximumError, expected[i], actual[i]);
                 }
@@ -267,7 +267,7 @@ namespace MathNet.Numerics.Data.UnitTests
         {
             for (var i = 0; i < expected.Count; i++)
             {
-                if (!actual[i].AlmostEqualWithError(expected[i], maximumError))
+                if (!actual[i].AlmostEqual(expected[i], maximumError))
                 {
                     Assert.Fail("Not equal within a maximum error {0}. Expected:{1}; Actual:{2}", maximumError, expected[i], actual[i]);
                 }
