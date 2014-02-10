@@ -42,11 +42,11 @@ namespace MathNet.Numerics.Data.Text
     public class DelimitedWriter
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelimitedWriter"/> class, using a comma as the delimiter.
+        /// Initializes a new instance of the <see cref="DelimitedWriter"/> class, using a tabulator as the delimiter.
         /// </summary>
         public DelimitedWriter()
         {
-            Delimiter = ",";
+            Delimiter = "\t";
         }
 
         /// <summary>
@@ -121,14 +121,14 @@ namespace MathNet.Numerics.Data.Text
         /// Writes a matrix to the given TextWriter. Optionally accepts custom column headers, delimiter, number format and culture.
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
-        /// <param name="writer">The <see cref="TextWriter"/> to write the matrix to. Default: ",".</param>
-        /// <param name="delimiter">Number delimiter to write between numbers of the same line.</param>
+        /// <param name="writer">The <see cref="TextWriter"/> to write the matrix to.</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default:  "\t" (tabulator).</param>
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
         /// <param name="formatProvider">The culture to use. Default: null.</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="writer"/> is <c>null</c>.</exception>
         /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
-        public static void Write<TDataType>(Matrix<TDataType> matrix, TextWriter writer, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
+        public static void Write<TDataType>(Matrix<TDataType> matrix, TextWriter writer, string delimiter = "\t", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
             if (matrix == null)
@@ -177,13 +177,13 @@ namespace MathNet.Numerics.Data.Text
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
         /// <param name="filePath">The path and name of the file to write the matrix to. If the file already exists, the file will be overwritten.</param>
-        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default: ",".</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default:  "\t" (tabulator).</param>
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
         /// <param name="formatProvider">The culture to use. Default: null.</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="filePath"/> is <c>null</c>.</exception>
         /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
-        public static void WriteFile<TDataType>(Matrix<TDataType> matrix, string filePath, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
+        public static void WriteFile<TDataType>(Matrix<TDataType> matrix, string filePath, string delimiter = "\t", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
             using (var writer = new StreamWriter(filePath))
@@ -197,13 +197,13 @@ namespace MathNet.Numerics.Data.Text
         /// </summary>
         /// <param name="matrix">The matrix to write.</param>
         /// <param name="stream">The <see cref="Stream"/> to write the matrix to.</param>
-        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default: ",".</param>
+        /// <param name="delimiter">Number delimiter to write between numbers of the same line. Default: "\t" (tabulator).</param>
         /// <param name="columnHeaders">Custom column header. Headers are only written if non-null and non-empty headers are provided. Default: null.</param>
         /// <param name="format">The number format to use on each element. Default: null.</param>
         /// <param name="formatProvider">The culture to use. Default: null.</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="matrix"/> or <paramref name="stream"/> is <c>null</c>.</exception>
         /// <typeparam name="TDataType">The data type of the Matrix. It can be either: Double, Single, Complex, or Complex32.</typeparam>
-        public static void WriteStream<TDataType>(Matrix<TDataType> matrix, Stream stream, string delimiter = ",", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
+        public static void WriteStream<TDataType>(Matrix<TDataType> matrix, Stream stream, string delimiter = "\t", IList<string> columnHeaders = null, string format = null, IFormatProvider formatProvider = null)
             where TDataType : struct, IEquatable<TDataType>, IFormattable
         {
             using (var writer = new StreamWriter(stream))
