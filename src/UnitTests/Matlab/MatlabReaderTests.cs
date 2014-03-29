@@ -244,7 +244,7 @@ namespace MathNet.Numerics.Data.UnitTests.Matlab
 
             Assert.AreEqual(100, a.RowCount);
             Assert.AreEqual(100, a.ColumnCount);
-            AssertHelpers.AlmostEqual(27.232498979698409, a.L2Norm(), 6);
+            AssertHelpers.AlmostEqual(27.232498979698409, a.L2Norm(), 5);
         }
 
         /// <summary>
